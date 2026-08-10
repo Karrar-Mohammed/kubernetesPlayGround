@@ -1,0 +1,33 @@
+# Stage 1: Build the application code using JDK image
+FROM eclipse-temurin:21-jdk-alpine AS builder
+WORKDIR /app
+
+# Copy gradle wrapper and dependency scripts first to utilize layer caching
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle.kts .
+COPY settings.gradle.kts .
+
+# Ensure gradlew executable permissions
+RUN chmod +x ./gradlew
+
+# Copy application source code
+COPY src src
+
+# Build executable Spring Boot JAR artifact (skipping tests during image build)
+RUN ./gradlew bootJar --no-daemon -x test
+
+# Stage 2: Final minimal JRE runtime image for image size reduction
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+
+# Create non-root user for security in Kubernetes cluster
+RUN addgroup -S spring && adduser -S spring -G spring
+USER spring:spring
+
+# Copy ONLY the compiled executable JAR artifact from Stage 1 into the final clean runtime image
+COPY --from=builder /app/build/libs/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

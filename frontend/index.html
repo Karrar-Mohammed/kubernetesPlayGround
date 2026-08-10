@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes User Info Playground</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --accent-hover: #0284c7;
+            --danger-color: #ef4444;
+            --danger-hover: #dc2626;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        header h1 {
+            color: var(--accent-color);
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .badge-info {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-color);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* Note: Inputs use type="text" and no required attributes so raw values are sent to backend for learning backend validation logs */
+        input[type="text"], select {
+            width: 100%;
+            padding: 0.65rem 0.8rem;
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: var(--accent-color);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.25rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: #0f172a;
+            flex: 2;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--border-color);
+            color: var(--text-color);
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+
+        .btn-edit {
+            background-color: #f59e0b;
+            color: #0f172a;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-edit:hover {
+            background-color: #d97706;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #0f172a;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .log-container {
+            background-color: #090d16;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            max-height: 250px;
+            overflow-y: auto;
+            color: #38bdf8;
+            line-height: 1.4;
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed #1e293b;
+        }
+
+        .log-status-200, .log-status-201 { color: #4ade80; }
+        .log-status-400 { color: #f87171; }
+        .log-status-404 { color: #fbbf24; }
+        .log-status-500 { color: #f43f5e; }
+
+        .helper-tip {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>☸️ Kubernetes UserInfo Playground</h1>
+        <p>Spring Boot + PostgreSQL + Nginx (Multi-Pod K8s Learning App)</p>
+        <div class="badge-info">💡 Backend Validation Learning: HTML validation is disabled. Check pod logs (`kubectl logs -f deployment/backend-deployment`) to see backend validation events!</div>
+    </header>
+
+    <div class="grid-layout">
+        <!-- Form Section -->
+        <div class="card">
+            <h2 id="form-title">➕ Add User</h2>
+            <!-- novalidate attribute ensures browser won't stop invalid submissions -->
+            <form id="user-form" novalidate>
+                <input type="hidden" id="user-id">
+
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" placeholder="e.g. John (Min 2 chars)">
+                    <div class="helper-tip">Try submitting blank or 1 character to test backend error.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" placeholder="e.g. Doe (Min 2 chars)">
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="text" id="age" placeholder="e.g. 25 (Min 0, Max 150)">
+                    <div class="helper-tip">Try negative values (e.g. -5) or text to test backend error.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender">
+                        <option value="">-- Select Gender --</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="INVALID_GENDER">INVALID_GENDER (Test Enum error)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="placeOfBirth">Place of Birth</label>
+                    <input type="text" id="placeOfBirth" placeholder="e.g. New York">
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" placeholder="e.g. 123 Main St, Springfield">
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary" id="btn-save">Send Request to Backend</button>
+                    <button type="button" class="btn btn-secondary" id="btn-clear" onclick="resetForm()">Clear</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Table Section -->
+        <div class="card">
+            <h2>
+                📋 Registered Users
+                <button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="fetchUsers()">Refresh List</button>
+            </h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Birthplace</th>
+                            <th>Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                        <tr>
+                            <td colspan="7" style="text-align:center; color: var(--text-muted);">Loading user records from PostgreSQL...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Response / Pod Log Console -->
+    <div class="card">
+        <h2>📡 Live Backend HTTP Response Monitor</h2>
+        <div class="log-container" id="log-console">
+            <div class="log-entry">Waiting for requests... Click "Send Request to Backend" above to trigger backend CRUD & validation.</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = '/api/users';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchUsers();
+
+        document.getElementById('user-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            saveUser();
+        });
+    });
+
+    async function fetchUsers() {
+        try {
+            const res = await fetch(API_URL);
+            logResponse('GET /api/users', res.status, await res.json());
+            if (res.ok) {
+                const users = await res.json();
+                renderTable(users);
+            }
+        } catch (err) {
+            logResponse('GET /api/users', 'ERROR', { message: err.message });
+        }
+    }
+
+    function renderTable(users) {
+        const tbody = document.getElementById('user-table-body');
+        if (!users || users.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No records found in PostgreSQL database. Create one using the form.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = users.map(user => `
+            <tr>
+                <td>${user.id}</td>
+                <td><strong>${escapeHtml(user.firstName)} ${escapeHtml(user.lastName)}</strong></td>
+                <td>${user.age}</td>
+                <td>${escapeHtml(user.gender)}</td>
+                <td>${escapeHtml(user.placeOfBirth)}</td>
+                <td>${escapeHtml(user.address)}</td>
+                <td class="actions-cell">
+                    <button class="btn btn-edit" onclick="editUser(${user.id}, '${escapeHtml(user.firstName)}', '${escapeHtml(user.lastName)}', ${user.age}, '${escapeHtml(user.gender)}', '${escapeHtml(user.placeOfBirth)}', '${escapeHtml(user.address)}')">Edit</button>
+                    <button class="btn btn-danger" onclick="deleteUser(${user.id})">Delete</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async function saveUser() {
+        const userId = document.getElementById('user-id').value;
+        const ageVal = document.getElementById('age').value;
+
+        // Note: Raw string values sent to backend so backend validates types & inputs
+        const payload = {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            age: ageVal === '' ? null : (isNaN(ageVal) ? ageVal : parseInt(ageVal, 10)),
+            gender: document.getElementById('gender').value || null,
+            placeOfBirth: document.getElementById('placeOfBirth').value,
+            address: document.getElementById('address').value
+        };
+
+        const isUpdate = !!userId;
+        const url = isUpdate ? `${API_URL}/${userId}` : API_URL;
+        const method = isUpdate ? 'PUT' : 'POST';
+
+        try {
+            const res = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            logResponse(`${method} ${url}`, res.status, data);
+
+            if (res.ok) {
+                resetForm();
+                fetchUsers();
+            }
+        } catch (err) {
+            logResponse(`${method} ${url}`, 'NETWORK_ERROR', { message: err.message });
+        }
+    }
+
+    async function editUser(id, firstName, lastName, age, gender, placeOfBirth, address) {
+        document.getElementById('user-id').value = id;
+        document.getElementById('firstName').value = firstName;
+        document.getElementById('lastName').value = lastName;
+        document.getElementById('age').value = age;
+        document.getElementById('gender').value = gender;
+        document.getElementById('placeOfBirth').value = placeOfBirth;
+        document.getElementById('address').value = address;
+
+        document.getElementById('form-title').innerText = `✏️ Edit User (ID: ${id})`;
+        document.getElementById('btn-save').innerText = 'Update User Record';
+    }
+
+    async function deleteUser(id) {
+        if (!confirm(`Are you sure you want to delete user ID ${id}?`)) return;
+
+        try {
+            const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            const data = await res.json();
+            logResponse(`DELETE ${API_URL}/${id}`, res.status, data);
+
+            if (res.ok) {
+                fetchUsers();
+            }
+        } catch (err) {
+            logResponse(`DELETE ${API_URL}/${id}`, 'ERROR', { message: err.message });
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('user-id').value = '';
+        document.getElementById('user-form').reset();
+        document.getElementById('form-title').innerText = '➕ Add User';
+        document.getElementById('btn-save').innerText = 'Send Request to Backend';
+    }
+
+    function logResponse(action, status, body) {
+        const consoleEl = document.getElementById('log-console');
+        const timestamp = new Date().toLocaleTimeString();
+        const statusClass = `log-status-${status}`;
+
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `
+            <div><strong>[${timestamp}] ${action}</strong> &rarr; <span class="${statusClass}">HTTP Status ${status}</span></div>
+            <pre style="margin-top: 0.3rem; white-space: pre-wrap; font-size: 0.8rem;">${JSON.stringify(body, null, 2)}</pre>
+        `;
+
+        consoleEl.insertBefore(entry, consoleEl.firstChild);
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+</script>
+</body>
+</html>

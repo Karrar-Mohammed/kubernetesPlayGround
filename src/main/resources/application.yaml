@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: kubernetesPlayGround
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/userdb}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres123}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    com.kubernetes.playground: DEBUG
+    org.springframework.web: INFO
