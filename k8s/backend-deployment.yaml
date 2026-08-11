@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: user-backend
-          image: user-backend:latest
+          image: karar99/user-backend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
