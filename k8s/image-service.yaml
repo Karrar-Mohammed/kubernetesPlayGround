@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: image-storage-pvc
+  namespace: frontend-backend
+spec:
+  accessModes: ["ReadWriteMany"]
+  storageClassName: nfs-client
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-service
+  namespace: frontend-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: image-service
+  template:
+    metadata:
+      labels:
+        app: image-service
+    spec:
+      containers:
+      - name: image-service
+        image: karar99/image-service:latest
+        ports:
+        - containerPort: 8081
+        env:
+        - name: STORAGE_PATH
+          value: /data/images
+        - name: DATABASE_URL
+          value: jdbc:postgresql://postgres-service:5432/userdb
+        - name: DATABASE_USERNAME
+          value: postgres
+        - name: DATABASE_PASSWORD
+          value: postgres123
+        volumeMounts:
+        - name: images
+          mountPath: /data/images
+      volumes:
+      - name: images
+        persistentVolumeClaim:
+          claimName: image-storage-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: image-service
+  namespace: frontend-backend
+spec:
+  selector:
+    app: image-service
+  ports:
+  - port: 8081
+    targetPort: 8081
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: image-service-ingress
+  namespace: frontend-backend
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: images.k8s.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: image-service
+            port:
+              number: 8081
