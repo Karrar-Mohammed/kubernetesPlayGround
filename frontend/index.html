@@ -18,21 +18,18 @@
             --success-color: #22c55e;
             --warning-color: #f59e0b;
         }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
-
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
             padding: 2rem;
             min-height: 100vh;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -40,24 +37,20 @@
             flex-direction: column;
             gap: 2rem;
         }
-
         header {
             text-align: center;
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 1rem;
         }
-
         header h1 {
             color: var(--accent-color);
             font-size: 2.2rem;
             margin-bottom: 0.5rem;
         }
-
         header p {
             color: var(--text-muted);
             font-size: 1rem;
         }
-
         .badge-info {
             display: inline-block;
             background: rgba(56, 189, 248, 0.1);
@@ -68,19 +61,16 @@
             font-size: 0.85rem;
             margin-top: 0.5rem;
         }
-
         .grid-layout {
             display: grid;
             grid-template-columns: 1fr 2fr;
             gap: 2rem;
         }
-
         @media (max-width: 900px) {
             .grid-layout {
                 grid-template-columns: 1fr;
             }
         }
-
         .card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -88,7 +78,6 @@
             padding: 1.5rem;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
         }
-
         .card h2 {
             font-size: 1.3rem;
             color: var(--accent-color);
@@ -97,11 +86,9 @@
             align-items: center;
             justify-content: space-between;
         }
-
         .form-group {
             margin-bottom: 1rem;
         }
-
         label {
             display: block;
             margin-bottom: 0.4rem;
@@ -109,9 +96,7 @@
             font-weight: 500;
             font-size: 0.9rem;
         }
-
-        /* Note: Inputs use type="text" and no required attributes so raw values are sent to backend for learning backend validation logs */
-        input[type="text"], select {
+        input[type="text"], input[type="file"], select {
             width: 100%;
             padding: 0.65rem 0.8rem;
             background-color: #0f172a;
@@ -122,17 +107,14 @@
             outline: none;
             transition: border-color 0.2s;
         }
-
         input[type="text"]:focus, select:focus {
             border-color: var(--accent-color);
         }
-
         .btn-group {
             display: flex;
             gap: 0.5rem;
             margin-top: 1.5rem;
         }
-
         .btn {
             padding: 0.75rem 1.25rem;
             border: none;
@@ -146,77 +128,63 @@
             justify-content: center;
             gap: 0.5rem;
         }
-
         .btn-primary {
             background-color: var(--accent-color);
             color: #0f172a;
             flex: 2;
         }
-
         .btn-primary:hover {
             background-color: var(--accent-hover);
         }
-
         .btn-secondary {
             background-color: var(--border-color);
             color: var(--text-color);
             flex: 1;
         }
-
         .btn-secondary:hover {
             background-color: #475569;
         }
-
         .btn-danger {
             background-color: var(--danger-color);
             color: white;
             padding: 0.35rem 0.75rem;
             font-size: 0.85rem;
         }
-
         .btn-danger:hover {
             background-color: var(--danger-hover);
         }
-
         .btn-edit {
             background-color: #f59e0b;
             color: #0f172a;
             padding: 0.35rem 0.75rem;
             font-size: 0.85rem;
         }
-
         .btn-edit:hover {
             background-color: #d97706;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 0.5rem;
         }
-
         th, td {
             padding: 0.75rem;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
             font-size: 0.9rem;
         }
-
         th {
             background-color: #0f172a;
             color: var(--accent-color);
             font-weight: 600;
         }
-
         tr:hover {
             background-color: rgba(255, 255, 255, 0.02);
         }
-
         .actions-cell {
             display: flex;
             gap: 0.4rem;
         }
-
         .log-container {
             background-color: #090d16;
             border: 1px solid var(--border-color);
@@ -229,18 +197,15 @@
             color: #38bdf8;
             line-height: 1.4;
         }
-
         .log-entry {
             margin-bottom: 0.5rem;
             padding-bottom: 0.5rem;
             border-bottom: 1px dashed #1e293b;
         }
-
         .log-status-200, .log-status-201 { color: #4ade80; }
         .log-status-400 { color: #f87171; }
         .log-status-404 { color: #fbbf24; }
         .log-status-500 { color: #f43f5e; }
-
         .helper-tip {
             font-size: 0.8rem;
             color: var(--text-muted);
@@ -258,30 +223,24 @@
     </header>
 
     <div class="grid-layout">
-        <!-- Form Section -->
         <div class="card">
             <h2 id="form-title">➕ Add User</h2>
-            <!-- novalidate attribute ensures browser won't stop invalid submissions -->
             <form id="user-form" novalidate>
                 <input type="hidden" id="user-id">
-
                 <div class="form-group">
                     <label for="firstName">First Name</label>
                     <input type="text" id="firstName" placeholder="e.g. John (Min 2 chars)">
                     <div class="helper-tip">Try submitting blank or 1 character to test backend error.</div>
                 </div>
-
                 <div class="form-group">
                     <label for="lastName">Last Name</label>
                     <input type="text" id="lastName" placeholder="e.g. Doe (Min 2 chars)">
                 </div>
-
                 <div class="form-group">
                     <label for="age">Age</label>
                     <input type="text" id="age" placeholder="e.g. 25 (Min 0, Max 150)">
                     <div class="helper-tip">Try negative values (e.g. -5) or text to test backend error.</div>
                 </div>
-
                 <div class="form-group">
                     <label for="gender">Gender</label>
                     <select id="gender">
@@ -291,17 +250,14 @@
                         <option value="INVALID_GENDER">INVALID_GENDER (Test Enum error)</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label for="placeOfBirth">Place of Birth</label>
                     <input type="text" id="placeOfBirth" placeholder="e.g. New York">
                 </div>
-
                 <div class="form-group">
                     <label for="address">Address</label>
                     <input type="text" id="address" placeholder="e.g. 123 Main St, Springfield">
                 </div>
-
                 <div class="btn-group">
                     <button type="submit" class="btn btn-primary" id="btn-save">Send Request to Backend</button>
                     <button type="button" class="btn btn-secondary" id="btn-clear" onclick="resetForm()">Clear</button>
@@ -309,7 +265,6 @@
             </form>
         </div>
 
-        <!-- Table Section -->
         <div class="card">
             <h2>
                 📋 Registered Users
@@ -338,7 +293,32 @@
         </div>
     </div>
 
-    <!-- Live Response / Pod Log Console -->
+    <div class="card">
+        <h2>🖼️ Update Profile Picture</h2>
+        <div class="grid-layout" style="grid-template-columns: 1fr 1fr; align-items: start;">
+            <div>
+                <div class="form-group">
+                    <label for="pic-user-select">Select Existing User</label>
+                    <select id="pic-user-select">
+                        <option value="">-- Select a user --</option>
+                    </select>
+                    <div class="helper-tip">Only users already created above can receive a photo.</div>
+                </div>
+                <div class="form-group">
+                    <label for="pic-input">Choose Photo</label>
+                    <input type="file" id="pic-input" accept="image/*">
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" onclick="updatePic()">Upload / Update Photo</button>
+                </div>
+                <p class="helper-tip" id="pic-status"></p>
+            </div>
+            <div style="text-align:center;">
+                <img id="profile-pic-preview" src="" alt="No photo yet" style="max-width:180px; max-height:180px; border-radius:8px; border:1px solid var(--border-color); display:none;">
+            </div>
+        </div>
+    </div>
+
     <div class="card">
         <h2>📡 Live Backend HTTP Response Monitor</h2>
         <div class="log-container" id="log-console">
@@ -349,6 +329,8 @@
 
 <script>
     const API_URL = '/api/users';
+    const IMAGES_URL = '/images';
+    let cachedUsers = [];
 
     document.addEventListener('DOMContentLoaded', () => {
         fetchUsers();
@@ -357,15 +339,19 @@
             e.preventDefault();
             saveUser();
         });
+
+        document.getElementById('pic-user-select').addEventListener('change', (e) => {
+            previewExistingPic(e.target.value);
+        });
     });
 
     async function fetchUsers() {
         try {
             const res = await fetch(API_URL);
-            logResponse('GET /api/users', res.status, await res.json());
+            const data = await res.json();
+            logResponse('GET /api/users', res.status, data);
             if (res.ok) {
-                const users = await res.json();
-                renderTable(users);
+                renderTable(data);
             }
         } catch (err) {
             logResponse('GET /api/users', 'ERROR', { message: err.message });
@@ -373,6 +359,9 @@
     }
 
     function renderTable(users) {
+        cachedUsers = users || [];
+        populateUserDropdown(cachedUsers);
+
         const tbody = document.getElementById('user-table-body');
         if (!users || users.length === 0) {
             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No records found in PostgreSQL database. Create one using the form.</td></tr>';
@@ -395,11 +384,25 @@
         `).join('');
     }
 
+    function populateUserDropdown(users) {
+        const select = document.getElementById('pic-user-select');
+        const previouslySelected = select.value;
+        select.innerHTML = '<option value="">-- Select a user --</option>';
+        users.forEach(u => {
+            const opt = document.createElement('option');
+            opt.value = u.id;
+            opt.textContent = `${u.id} — ${u.firstName} ${u.lastName}`;
+            select.appendChild(opt);
+        });
+        if (previouslySelected && users.some(u => String(u.id) === previouslySelected)) {
+            select.value = previouslySelected;
+        }
+    }
+
     async function saveUser() {
         const userId = document.getElementById('user-id').value;
         const ageVal = document.getElementById('age').value;
 
-        // Note: Raw string values sent to backend so backend validates types & inputs
         const payload = {
             firstName: document.getElementById('firstName').value,
             lastName: document.getElementById('lastName').value,
@@ -466,6 +469,74 @@
         document.getElementById('user-form').reset();
         document.getElementById('form-title').innerText = '➕ Add User';
         document.getElementById('btn-save').innerText = 'Send Request to Backend';
+    }
+
+    async function previewExistingPic(userId) {
+        const img = document.getElementById('profile-pic-preview');
+        const status = document.getElementById('pic-status');
+        status.textContent = '';
+
+        if (!userId) {
+            img.style.display = 'none';
+            return;
+        }
+
+        try {
+            const res = await fetch(`${IMAGES_URL}/${userId}`);
+            if (res.ok) {
+                img.src = `${IMAGES_URL}/${userId}/file?ts=${Date.now()}`;
+                img.style.display = 'block';
+            } else {
+                img.style.display = 'none';
+                status.textContent = 'No photo uploaded yet for this user.';
+            }
+        } catch (err) {
+            img.style.display = 'none';
+        }
+    }
+
+    async function updatePic() {
+        const userId = document.getElementById('pic-user-select').value;
+        const fileInput = document.getElementById('pic-input');
+        const file = fileInput.files[0];
+        const status = document.getElementById('pic-status');
+
+        if (!userId) {
+            status.textContent = 'Select a user first.';
+            return;
+        }
+        if (!file) {
+            status.textContent = 'Choose a photo file first.';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const res = await fetch(`${IMAGES_URL}/${userId}`, {
+                method: 'PUT',
+                body: formData
+            });
+
+            let data = null;
+            try { data = await res.clone().json(); } catch (e) { /* non-JSON response */ }
+            logResponse(`PUT ${IMAGES_URL}/${userId}`, res.status, data);
+
+            if (!res.ok) {
+                status.textContent = (data && data.error) ? data.error : 'Upload failed.';
+                return;
+            }
+
+            status.textContent = 'Photo updated successfully.';
+            fileInput.value = '';
+            const img = document.getElementById('profile-pic-preview');
+            img.src = `${IMAGES_URL}/${userId}/file?ts=${Date.now()}`;
+            img.style.display = 'block';
+        } catch (err) {
+            status.textContent = 'Network error: ' + err.message;
+            logResponse(`PUT ${IMAGES_URL}/${userId}`, 'NETWORK_ERROR', { message: err.message });
+        }
     }
 
     function logResponse(action, status, body) {
