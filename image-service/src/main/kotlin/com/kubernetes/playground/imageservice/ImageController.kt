@@ -1,23 +1,27 @@
 package com.kubernetes.playground.imageservice
 
-import org.springframework.core.io.FileSystemResource
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import java.io.File
+import software.amazon.awssdk.core.sync.RequestBody
+import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest
+import software.amazon.awssdk.services.s3.model.GetObjectRequest
+import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import java.util.UUID
 
 @RestController
 @RequestMapping("/images")
-class ImageController(private val repo: ImageRepository) {
+class ImageController(
+    private val repo: ImageRepository,
+    private val s3: S3Client
+) {
 
-    private val storageDir = File(System.getenv("STORAGE_PATH") ?: "/data/images")
-
-    init {
-        storageDir.mkdirs()
-    }
+    @Value("\${minio.bucket}")
+    lateinit var bucket: String
 
     @PutMapping("/{userId}")
     fun updatePicture(@PathVariable userId: Long, @RequestParam file: MultipartFile): ResponseEntity<Any> {
@@ -26,15 +30,36 @@ class ImageController(private val repo: ImageRepository) {
                 .body(mapOf("error" to "User $userId does not exist"))
         }
 
-        repo.findById(userId).ifPresent { existing ->
-            File(storageDir, existing.filename).delete()
+        val existing = repo.findById(userId).orElse(null)
+
+        // delete the old object from MinIO if this user already had a picture
+        existing?.let {
+            s3.deleteObject(
+                DeleteObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(it.filename)
+                    .build()
+            )
         }
 
         val ext = file.originalFilename?.substringAfterLast('.', "jpg") ?: "jpg"
-        val filename = "${userId}-${UUID.randomUUID()}.$ext"
-        file.transferTo(File(storageDir, filename))
+        val objectKey = "${userId}-${UUID.randomUUID()}.$ext"
 
-        val saved = repo.save(ImageMetadata(userId = userId, filename = filename))
+        s3.putObject(
+            PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(objectKey)
+                .contentType(file.contentType ?: "image/jpeg")
+                .build(),
+            RequestBody.fromInputStream(file.inputStream, file.size)
+        )
+
+        val entity = ImageMetadata(userId = userId, filename = objectKey)
+        if (existing != null) {
+            entity.markAsExisting()
+        }
+
+        val saved = repo.save(entity)
         return ResponseEntity.ok(saved)
     }
 
@@ -45,9 +70,17 @@ class ImageController(private val repo: ImageRepository) {
             .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(mapOf("error" to "No picture for user $userId")))
 
     @GetMapping("/{userId}/file", produces = [MediaType.IMAGE_JPEG_VALUE])
-    fun getFile(@PathVariable userId: Long): ResponseEntity<FileSystemResource> {
+    fun getFile(@PathVariable userId: Long): ResponseEntity<ByteArray> {
         val meta = repo.findById(userId).orElse(null)
             ?: return ResponseEntity.notFound().build()
-        return ResponseEntity.ok(FileSystemResource(File(storageDir, meta.filename)))
+
+        val objectBytes = s3.getObject(
+            GetObjectRequest.builder()
+                .bucket(bucket)
+                .key(meta.filename)
+                .build()
+        ).readAllBytes()
+
+        return ResponseEntity.ok(objectBytes)
     }
 }
